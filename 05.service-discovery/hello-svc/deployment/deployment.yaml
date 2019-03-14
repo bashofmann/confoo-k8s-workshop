@@ -24,7 +24,6 @@ spec:
       containers:
         - name: hello-svc
           image: bashofmann/k8s-workshop-hello-svc:5.0.0
-          imagePullPolicy: Always
           ports:
             - containerPort: 3001
               name: http

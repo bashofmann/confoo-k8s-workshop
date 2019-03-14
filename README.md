@@ -22,12 +22,12 @@ Server Version: version.Info{Major:"1", Minor:"13", GitVersion:"v1.13.3", GitCom
 ```
 * Create your own namespace to work in:
 ```
-$ kubectl create namespace <YOURNAME>
-namespace/<YOURNAME> created
+$ kubectl create namespace demo
+namespace/test created
 ```
 * Change your default context to your namespace:
 ```
-$ kubectl config set-context default --namespace=<YOURNAME>
+$ kubectl config set-context default --namespace=demo
 Context "default" modified.
 ```
 
@@ -52,6 +52,11 @@ kubectl scale deployment web-application --replicas 2
 
 ## 2. Simple Web Application with Ingress and TLS
 
+* Deploy Ingress Controller
+* Deploy cert-manager
+* Create cluster issuer
+* Add dns entry
+* Create wildcard certificate
 * Build docker image
 ```
 docker build -t bashofmann/k8s-workshop-web-application:2.0.0 02.ingress-lb-and-tls/web-application/
@@ -84,7 +89,7 @@ docker build -t bashofmann/k8s-workshop-web-application:4.0.0 04.helm/web-applic
 ```
 * Deploy application
 ```
-helm upgrade --install <YOURNAME>-web-application 04.helm/web-application/helm/web-application -f 04.helm/web-application/my-values.yaml
+helm upgrade --install test-web-application 04.helm/web-application/helm/web-application -f 04.helm/web-application/my-values.yaml
 ```
 * See deployed applications
 ```
@@ -99,7 +104,7 @@ docker build -t bashofmann/k8s-workshop-web-application:5.0.0 05.service-discove
 ```
 * Update application
 ```
-helm upgrade --install <YOURNAME>-web-application 05.service-discovery/web-application/helm/web-application -f 05.service-discovery/web-application/my-values.yaml
+helm upgrade --install test-web-application 05.service-discovery/web-application/helm/web-application -f 05.service-discovery/web-application/my-values.yaml
 ```
 * Build and deploy quote-svc
 ```
@@ -114,6 +119,7 @@ kubectl apply -f 05.service-discovery/hello-svc/deployment/
 
 ## 6. Databases and persistent storage
 
+* Install mysql percona operator
 * Create database
 ```
 kubectl apply -f 06.databases-and-persistent-storage/database/
@@ -124,7 +130,7 @@ docker build -t bashofmann/k8s-workshop-web-application:6.0.0 06.databases-and-p
 ```
 * Update application
 ```
-helm upgrade --install <YOURNAME>-web-application 06.databases-and-persistent-storage/web-application/helm/web-application -f 06.databases-and-persistent-storage/web-application/my-values.yaml
+helm upgrade --install test-web-application 06.databases-and-persistent-storage/web-application/helm/web-application -f 06.databases-and-persistent-storage/web-application/my-values.yaml
 ```
 
 ## 07. Service meshes
@@ -137,12 +143,18 @@ export PATH=$PATH:$HOME/.linkerd2/bin
 linkerd version
 ```
 
+* Install linkerd
 * Inject Linkerd
 ```
 kubectl get deployments -o yaml | linkerd inject - | kubectl apply -f -
 ```
 
 * Go to https://linkerd-dashboard.phpuk19.plgrnd.be/ and see the metrics
+
+## 07.1 Debugging
+
+
+cd 05.service-discovery/quote-svc && telepresence --swap-deployment quote-svc --namespace default --expose 3000 --run npm run debug
 
 ## 08. Monitoring
 
